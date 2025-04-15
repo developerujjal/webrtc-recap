@@ -24,5 +24,3 @@ const changeVideoSize = (e) => {
         console.log(capabilities)
     })
 }
-
-document.querySelector('#change-size').addEventListener('click', e => changeVideoSize(e))
