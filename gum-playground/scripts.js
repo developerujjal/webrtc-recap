@@ -12,6 +12,7 @@ const getMicAndCamera = async (e) => {
         // videoElement.srcObject = stream;
         // videoElement.play();    
         console.log("Media Stream: ", stream)
+        getDevices();
         
     } catch (error) {
         console.log('Error accessing media devices.', error)
@@ -44,3 +45,7 @@ document.querySelector('#start-record').addEventListener('click', e => startReco
 document.querySelector('#stop-record').addEventListener('click', e => stopRecording(e));
 document.querySelector('#play-record').addEventListener('click', e => playRecording(e));
 document.querySelector('#share-screen').addEventListener('click', e => shareScreen(e));
+
+document.querySelector('#audio-input').addEventListener('change', e => changeAutioInput(e));
+document.querySelector('#video-input').addEventListener('change', e => changeVideoInput(e));
+document.querySelector('#audio-output').addEventListener('change', e => changeAudioOutput(e));
