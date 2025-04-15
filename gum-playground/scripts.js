@@ -16,7 +16,26 @@ const getMicAndCamera = async (e) => {
     } catch (error) {
         console.log('Error accessing media devices.', error)
     }
+};
+
+
+const showMyFeed = (e) => {
+    const videoElement = document.querySelector('#my-video');
+    videoElement.srcObject = stream;
+
+   const tracks = stream.getTracks();
+   console.log(tracks)
+};
+
+
+const stopMyFeed = (e) => {
+    stream.getTracks().forEach((track) => {
+        console.log(track)
+        track.stop(); // disaccociate the track from the source or stream
+    });
 }
 
 
-document.querySelector('#share').addEventListener('click', (e) => getMicAndCamera(e))
+document.querySelector('#share').addEventListener('click', (e) => getMicAndCamera(e));
+document.querySelector('#show-video').addEventListener('click', e => showMyFeed(e));
+document.querySelector('#stop-video').addEventListener('click', (e) => stopMyFeed(e))
