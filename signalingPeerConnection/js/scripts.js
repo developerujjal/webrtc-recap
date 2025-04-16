@@ -24,6 +24,10 @@ const call = async (e) => {
             const offer = await peerConnection.createOffer();
             console.log('Offer created:', offer);
 
+            // Set the local description to the offer
+            await peerConnection.setLocalDescription(offer)
+
+
         } catch (error) {
             console.error('Error creating offer:', error);
         }
@@ -49,9 +53,20 @@ const createPeerConnection = () => {
 
         localStream.getTracks().forEach((track) => {
             peerConnection.addTrack(track, localStream);
-        })
+        });
 
-        
+
+        // Both ways below work the same to handle ICE candidate events:
+        // 1. Using onicecandidate — simple and only one handler allowed
+        // 2. Using addEventListener — more flexible, can add multiple handlers
+
+        // Way: 1
+        // peerConnection.onicecandidate = (event) => {
+        //     console.log('ICE candidate (onicecandidate):', event.candidate);
+        // }
+
+
+        // Way: 2
         peerConnection.addEventListener('icecandidate', e => {
             console.log('ICE candidate Found....')
             console.log('ICE candidate:', e.candidate);
