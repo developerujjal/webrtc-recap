@@ -1,6 +1,8 @@
 const localVideoElement = document.querySelector('#local-video');
 const remoteVideoElement = document.querySelector('#remote-video');
 
+const socket = io(); // Socket.io client instance for real-time communication
+
 let localStream; // Local media stream for the local video element
 let remoteStream; // Remote media stream for the remote video element
 let peerConnection; // Peer connection for WebRTC communication 
