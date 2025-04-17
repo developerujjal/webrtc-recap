@@ -1,0 +1,65 @@
+1. Someone need to run getUserMedia()
+2. Client1 create a peerConnection;
+3. cllent1 need iceServer;
+4 CLient1 need to add track to peerConnection;
+4. Client1 need to add event listener for iceCandidate; it run only when setLocalDescription is called;
+5. CLient1 need to create offer;
+6. client1 hands offer to setLocalDescription;
+
+
+
+1. Someone must getUserMedia() - client1/init
+2. Client1 creates RTCPeerConnection
+3. PeerConnection needs iceServer like STUN/TURN
+   - we will nedd ICE candidates later
+4. CLient1 add localstrem tracks to peerConnection;
+   - we need to associate client1 feed with peerConnection
+5. client1 creates an offer
+   - need peerConnection with tracks
+   -offer = RTCSessionDescription; which is we don't need to covert it, plain object is ok;
+     1. SDP
+     2. Type(offer)
+6. Client1 hands offer to pc.setLocalDescription
+~7. ICE candidates can now start coming in (async)
+SIGNaling(someon to hep the broser find/talk to each other)
+
+
+====
+8. Client1 emits the offer
+   - socket.io server holds it for the other broser
+   - associate with client1
+~9. Once 7 happens, emit ICE candidates up to signaling server(async)
+   - socket.io server holds it for the other broser
+   - associate with client1
+Client1 and Singnaling server wait.
+   - wait for an answer/Client2/reciever
+10. Client2 loads up the webpage with io();
+   - a new client is connected to signaling server
+11. Socket.io sends/emit out the RTCSessionDescription/Offer(plain object) to the new client
+   - and offer to be sent!
+12. Client2 runs getUserMedia()
+13. Client2 creates a peerConnection()
+   - pass STUN servers
+14. Client2 adds localstrem tracks to peerConnection
+15. Client2 creates an answer (createAnswer())
+   - createAnswer = RTCSessionDescription/answer (sdp/type(answer))
+16. Client2 hands answer to pc.setLocalDescription
+17. Because Client2 has the offer, Client2 can hand/add the offer to pc.setRemoteDescription
+~18. When setLocalDescription, start collection ICE candidates(async)
+Singnaling server has been waiting.........
+19. Client2 emit/send the answer(RTCSessionDescription - spd/type) up to signaling server
+~20. Client2 will listen for tracks from remote.
+    - ans is done.
+    -waiting on ICE candidates
+    -waiting on tracks
+21. Singnaling server sends client1 answer(RTCSessionDescription - sdp/type)
+22. CLient1 takes the answer and hands it to pc.setRemoteDescription
+23. CLient1 waits for ICE candidates and tracks
+
+
+21 & 23 are waiting for ICE. Once ICE is exchanged, tracks will exchanged
+
+
+
+
+
