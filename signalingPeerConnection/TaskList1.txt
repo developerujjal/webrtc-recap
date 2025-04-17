@@ -52,6 +52,10 @@ Client1 and Singnaling server wait.
 17. Because Client2 has the offer, Client2 can hand/add the offer to pc.setRemoteDescription
 ~18. When setLocalDescription, start collection ICE candidates(async)
 Singnaling server has been waiting.........
+
+
+======
+
 19. Client2 emit/send the answer(RTCSessionDescription - spd/type) up to signaling server
 ~20. Client2 will listen for tracks from remote.
     - ans is done.

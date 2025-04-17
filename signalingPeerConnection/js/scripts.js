@@ -21,13 +21,17 @@ let didIOffer = false;
 
 const call = async (e) => {
     try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true
-        });
+        // const mediaStream = await navigator.mediaDevices.getUserMedia({
+        //     audio: true,
+        //     video: true
+        // });
 
-        localVideoElement.srcObject = mediaStream;
-        localStream = mediaStream;
+        // localVideoElement.srcObject = mediaStream;
+        // localStream = mediaStream;
+
+
+        // get the userMedia
+        await fetchUserMedia();
 
         // peer connection is created here
         await createPeerConnection();
@@ -53,13 +57,42 @@ const call = async (e) => {
 };
 
 
-const answerOffer = (offer) => {
-    console.log('Answering offer...', offer);
-   
+const answerOffer = async (offer) => {
+    await fetchUserMedia(); // Get user media before answering the offer
+    await createPeerConnection(offer.offer); // Create peer connection with the offer
+
+    // create an answer to the offer received from the signaling server
+    const answer = await peerConnection.createAnswer();
+
+    // This is Client 2, and Client 2 is using the answer as the local description
+    await peerConnection.setLocalDescription(answer); 
+    console.log('Answer created:', answer);
+
 };
 
 
-const createPeerConnection = () => {
+const fetchUserMedia = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: true
+            });
+
+            localVideoElement.srcObject = mediaStream;
+            localStream = mediaStream;
+
+            resolve();
+
+        } catch (error) {
+            console.error('Error fetching user media:', error);
+            reject(error);
+        };
+    });
+};
+
+
+const createPeerConnection = (offer) => {
     return new Promise((resolve, reject) => {
         // Create a new RTCPeerConnection instance with ICE servers configuration
         peerConnection = new RTCPeerConnection({
@@ -97,10 +130,19 @@ const createPeerConnection = () => {
                     iceCandidate: e.candidate,
                     iceUserName: userName,
                     didIOffer,
-                    
+
                 });
             };
         });
+
+
+        if (offer) {
+            // This won't be set if we are tigiring it from the call()
+            // This only happens/set when we are tigiring it from the answerOffer() function
+
+            // Set the remote description to the offer received from the signaling server
+            peerConnection.setRemoteDescription(offer);
+        }
 
         resolve();
 
