@@ -24,7 +24,8 @@
 SIGNaling(someon to hep the broser find/talk to each other)
 
 
-====
+========
+
 8. Client1 emits the offer
    - socket.io server holds it for the other broser
    - associate with client1
@@ -33,6 +34,10 @@ SIGNaling(someon to hep the broser find/talk to each other)
    - associate with client1
 Client1 and Singnaling server wait.
    - wait for an answer/Client2/reciever
+
+
+========
+
 10. Client2 loads up the webpage with io();
    - a new client is connected to signaling server
 11. Socket.io sends/emit out the RTCSessionDescription/Offer(plain object) to the new client

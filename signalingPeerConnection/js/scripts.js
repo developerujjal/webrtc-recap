@@ -53,6 +53,12 @@ const call = async (e) => {
 };
 
 
+const answerOffer = (offer) => {
+    console.log('Answering offer...', offer);
+   
+};
+
+
 const createPeerConnection = () => {
     return new Promise((resolve, reject) => {
         // Create a new RTCPeerConnection instance with ICE servers configuration
@@ -131,3 +137,4 @@ document.querySelector('#call').addEventListener('click', e => call(e))
 // await peerConnection.setLocalDescription(offer);
 
 // console.log('Offer sent:', offer);
+

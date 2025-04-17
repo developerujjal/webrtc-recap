@@ -56,9 +56,16 @@ io.on('connection', (socket) => {
     userName
   });
 
+  
+
+  // a new client has joined. if there are any offers available, send/emit them to the client
+  if(offers.length){
+    socket.emit('availableOffers', offers)
+  }
+
 
   socket.on('newOffer', (newOffer) => {
-    console.log('new offer received:', newOffer);
+    // console.log('new offer received:', newOffer);
 
     // Store the offer in the array
     offers.push({
@@ -76,10 +83,11 @@ io.on('connection', (socket) => {
 
   });
 
+
   socket.on('sendIceCandidateToSignalingServer', (iceCandidatedObj) => {
     const {didIOffer, iceCandidate, iceUserName} = iceCandidatedObj;
 
-    console.log('iceCandidate received:', iceCandidate);
+    // console.log('iceCandidate received:', iceCandidate);
 
     if(didIOffer){
       const offerInOffers = offers.find((offer) => offer.offererUsername === iceUserName);
@@ -89,7 +97,7 @@ io.on('connection', (socket) => {
       }
     };
 
-    console.log(offers)
+    // console.log(offers)
   });
 
 
