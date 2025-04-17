@@ -16,6 +16,8 @@ const socket = io({
 let localStream; // Local media stream for the local video element
 let remoteStream; // Remote media stream for the remote video element
 let peerConnection; // Peer connection for WebRTC communication 
+let didIOffer = false;
+
 
 const call = async (e) => {
     try {
@@ -34,11 +36,10 @@ const call = async (e) => {
         try {
             console.log('Creating offer...');
             const offer = await peerConnection.createOffer();
-            console.log('Offer created:', offer);
 
             // Set the local description to the offer
             await peerConnection.setLocalDescription(offer)
-
+            didIOffer = true; // Set the flag to indicate that we are the offerer
             socket.emit('newOffer', offer); // Send the offer to the server
 
 
@@ -84,6 +85,15 @@ const createPeerConnection = () => {
         peerConnection.addEventListener('icecandidate', e => {
             console.log('ICE candidate Found....')
             console.log('ICE candidate:', e.candidate);
+
+            if (e.candidate) {
+                socket.emit('sendIceCandidateToSignalingServer', {
+                    iceCandidate: e.candidate,
+                    iceUserName: userName,
+                    didIOffer,
+                    
+                });
+            };
         });
 
         resolve();

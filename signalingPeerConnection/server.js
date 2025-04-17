@@ -27,7 +27,7 @@ const io = new Server(httpServer)
 // so that we can send them to the clients when they connect
 // good for one to one communication
 // but not for group communication
-const offer = [
+const offers = [
   /* 
   offererUsername
   offer
@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
     console.log('new offer received:', newOffer);
 
     // Store the offer in the array
-    offer.push({
+    offers.push({
       offererUsername: userName,
       offer: newOffer,
       offerIceCandidate: [],
@@ -71,9 +71,25 @@ io.on('connection', (socket) => {
     });
 
     // Send the offer to the other clients except the one who created it
-    socket.broadcast.emit('newOfferAwaiting', offer.slice(-1));
+    socket.broadcast.emit('newOfferAwaiting', offers.slice(-1)); // send only the last offer
     // socket.broadcast.emit('newOfferAwaiting', offer[offer.length - 1]); // can work too
 
+  });
+
+  socket.on('sendIceCandidateToSignalingServer', (iceCandidatedObj) => {
+    const {didIOffer, iceCandidate, iceUserName} = iceCandidatedObj;
+
+    console.log('iceCandidate received:', iceCandidate);
+
+    if(didIOffer){
+      const offerInOffers = offers.find((offer) => offer.offererUsername === iceUserName);
+      if(offerInOffers){
+        // add the ice candidate to the offer
+        offerInOffers.offerIceCandidate.push(iceCandidate);
+      }
+    };
+
+    console.log(offers)
   });
 
 
