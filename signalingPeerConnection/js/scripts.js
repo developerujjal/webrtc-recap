@@ -1,7 +1,17 @@
+const userName = 'barry' + Math.floor(Math.random() * 100000);
+const password = 'x';
+
+document.querySelector('#user-name').innerText = userName;
+
 const localVideoElement = document.querySelector('#local-video');
 const remoteVideoElement = document.querySelector('#remote-video');
 
-const socket = io(); // Socket.io client instance for real-time communication
+const socket = io({
+    auth: {
+        userName,
+        password
+    }
+}); // Socket.io client instance for real-time communication
 
 let localStream; // Local media stream for the local video element
 let remoteStream; // Remote media stream for the remote video element
@@ -28,6 +38,8 @@ const call = async (e) => {
 
             // Set the local description to the offer
             await peerConnection.setLocalDescription(offer)
+
+            socket.emit('newOffer', offer); // Send the offer to the server
 
 
         } catch (error) {
