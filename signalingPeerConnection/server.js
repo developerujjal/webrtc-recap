@@ -99,16 +99,34 @@ io.on('connection', (socket) => {
         // 2. Any candidates that come in after the offer has been answered, 
         // will be pass through
 
+        // console.log('offerInOffers:', offerInOffers);
+
         if (offerInOffers.answererUsername) {
           // pass it through to the others socket
+          const socketToSendTo = connectedSockets.find((connectedSocket) => connectedSocket.userName === offerInOffers.answererUsername);
 
-        }
+          if (socketToSendTo) {
+            socket.to(socketToSendTo.socketId).emit('receivedIceCandidateFromServer', iceCandidate);
+          } else {
+            console.log('IceCandidate received but not found answerer')
+          };
+
+
+        };
+
       }
     } else {
       // this ice is coming from the answerer. send to the offerer
       // pass it through to the others socket
+      const offerInOffers = offers.find((offer) => offer.answererUsername === iceUserName);
 
-      
+      const socketToSendTo = connectedSockets.find((connectedSocket) => connectedSocket.userName === offerInOffers.offererUsername);
+
+      if (socketToSendTo) {
+        socket.to(socketToSendTo.socketId).emit('receivedIceCandidateFromServer', iceCandidate);
+      } else {
+        console.log('IceCandidate received but not found offerer')
+      };
     }
 
     // console.log(offers)

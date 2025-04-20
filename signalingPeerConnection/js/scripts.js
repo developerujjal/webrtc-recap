@@ -120,7 +120,7 @@ const fetchUserMedia = () => {
 
 
 const createPeerConnection = (offer) => {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         // Create a new RTCPeerConnection instance with ICE servers configuration
         peerConnection = new RTCPeerConnection({
             iceServers: [
@@ -132,12 +132,17 @@ const createPeerConnection = (offer) => {
             ]
         });
 
+        remoteStream = new MediaStream(); // Create a new MediaStream for the remote video element
+        remoteVideoElement.srcObject = remoteStream; // Set the remote video element's source to the remote stream
+
         localStream.getTracks().forEach((track) => {
+            // Add the local stream tracks, so they can send once the connection is established
+            // This is the local stream, and we are adding it to the peer connection
             peerConnection.addTrack(track, localStream);
         });
 
 
-        peerConnection.onsignalingstatechange =(e) => {
+        peerConnection.onsignalingstatechange = (e) => {
             console.log(e)
             console.log('Signaling state changed:', peerConnection.signalingState);
         }
@@ -169,6 +174,17 @@ const createPeerConnection = (offer) => {
         });
 
 
+        peerConnection.addEventListener('track', (e) => {
+            console.log('get a track from others peer connection')
+            console.log('Track event:', e);
+
+            e.streams[0].getTracks().forEach((track) => {
+                remoteStream.addTrack(track, remoteStream);
+                console.log('we are connected, Congratulation!')
+            })
+        })
+
+
         if (offer) {
             // This won't be set if we are tigiring it from the call()
             // This only happens/set when we are tigiring it from the answerOffer() function
@@ -183,6 +199,14 @@ const createPeerConnection = (offer) => {
         resolve();
 
     })
+
+};
+
+
+const addNewIceCandidate = (iceCandidate) => {
+    peerConnection.addIceCandidate(iceCandidate);
+    console.log('=====ICE candidate added=====');
+
 
 };
 

@@ -16,6 +16,14 @@ socket.on('answerResponse', (offerObj) => {
     console.log('answer response:', offerObj);
 
     addAnswer(offerObj); // 
+});
+
+
+socket.on('receivedIceCandidateFromServer', (iceCandidate) => {
+    addNewIceCandidate(iceCandidate);
+
+
+    console.log('received ice candidate from server:', iceCandidate);
 })
 
 
