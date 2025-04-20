@@ -72,8 +72,20 @@ const answerOffer = async (offer) => {
     // add the answer to the offer object, so that the server knows which offer this is related to
     offer.answer = answer; // Set the answer in the offer object
 
-    // emit the answer to the signaling server, so that the other client/client1 can receive it
-    socket.emit('newAnswer', offer);
+    // emit the answer to the signaling server, so that the other client/client1 can receive it;
+    // expect a response from the server with the already existing Ice candidates
+    // socket.emit('newAnswer', offer);
+
+    const offerIceCandidate = await socket.emitWithAck('newAnswer', offer)
+
+
+    offerIceCandidate.forEach((iceCandidate) => {
+        peerConnection.addIceCandidate(iceCandidate)
+        console.log('=====ICE candidate added=====');
+    });
+
+    console.log('offerIceCandidate:', offerIceCandidate);
+
 };
 
 

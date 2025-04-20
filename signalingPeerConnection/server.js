@@ -94,13 +94,27 @@ io.on('connection', (socket) => {
       if (offerInOffers) {
         // add the ice candidate to the offer
         offerInOffers.offerIceCandidate.push(iceCandidate);
+        // come back soon
+        // 1. When the answerer answers, all exsisting ice candidates are sent
+        // 2. Any candidates that come in after the offer has been answered, 
+        // will be pass through
+
+        if (offerInOffers.answererUsername) {
+          // pass it through to the others socket
+
+        }
       }
-    };
+    } else {
+      // this ice is coming from the answerer. send to the offerer
+      // pass it through to the others socket
+
+      
+    }
 
     // console.log(offers)
   });
 
-  socket.on('newAnswer', (offerObj) => {
+  socket.on('newAnswer', (offerObj, ackFunction) => {
     // emit the answer (offerObj) back to the client1
     //  in order to do that we need to the socket id of the client1 who created the offer
 
@@ -117,10 +131,13 @@ io.on('connection', (socket) => {
     // we need to find the offer in the offers array and update it with the answer
     const offerToUpdate = offers.find((offer) => offer.offererUsername == offerObj.offererUsername);
 
-    if(!offerToUpdate) {
+    if (!offerToUpdate) {
       console.log('Offer not found')
       return;
     };
+
+    // send back to the answerer all ice candidates that We have already collected
+    ackFunction(offerToUpdate.offerIceCandidate)
 
     offerToUpdate.answer = offerObj.answer;
     offerToUpdate.answererUsername = userName;
