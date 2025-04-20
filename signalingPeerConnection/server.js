@@ -100,6 +100,28 @@ io.on('connection', (socket) => {
     // console.log(offers)
   });
 
+  socket.on('newAnswer', (offerObj) => {
+   // emit the answer (offerObj) back to the client1
+  //  in order to do that we need to the socket id of the client1 who created the offer
+
+  const socketToAnswer = connectedSockets.find((connectedSocket) => connectedSocket.userName === offerObj.offererUsername);
+
+  if(!socketToAnswer){
+    console.log('Connected Socket not found')
+    return;
+  };
+
+  if(socketToAnswer){
+    // we found the socketId of the client1 who created the offer
+    const socketIdToAnswer = socketToAnswer.socketId;
+
+  }
+
+
+
+    
+  })
+
 
   socket.on('disconnect', () => {
     console.log('user disconnected', socket.id);

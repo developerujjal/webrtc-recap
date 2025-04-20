@@ -65,9 +65,15 @@ const answerOffer = async (offer) => {
     const answer = await peerConnection.createAnswer();
 
     // This is Client 2, and Client 2 is using the answer as the local description
-    await peerConnection.setLocalDescription(answer); 
+    // console.log(peerConnection.signalingState) // This will be "stable" if we are the one who created the offer
+    await peerConnection.setLocalDescription(answer);
     console.log('Answer created:', answer);
 
+    // add the answer to the offer object, so that the server knows which offer this is related to
+    offer.answer = answer; // Set the answer in the offer object
+
+    // emit the answer to the signaling server, so that the other client/client1 can receive it
+    socket.emit('newAnswer', offer); 
 };
 
 
@@ -141,7 +147,10 @@ const createPeerConnection = (offer) => {
             // This only happens/set when we are tigiring it from the answerOffer() function
 
             // Set the remote description to the offer received from the signaling server
+            // console.log(peerConnection.signalingState) // This will be "stable" if we are the one who created the offer
             peerConnection.setRemoteDescription(offer);
+            // console.log(peerConnection.signalingState) // This will be "have-remote-offer" if we are the one who created the offer
+
         }
 
         resolve();
