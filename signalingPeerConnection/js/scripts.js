@@ -73,7 +73,16 @@ const answerOffer = async (offer) => {
     offer.answer = answer; // Set the answer in the offer object
 
     // emit the answer to the signaling server, so that the other client/client1 can receive it
-    socket.emit('newAnswer', offer); 
+    socket.emit('newAnswer', offer);
+};
+
+
+const addAnswer = async (offerObj) => {
+    // addAnswer is called in the socketListener.js file when the answer is received from the signaling server;
+    // at this point, the offer and answer have been exchanged
+
+    await peerConnection.setRemoteDescription(offerObj.answer);
+
 };
 
 
@@ -99,7 +108,7 @@ const fetchUserMedia = () => {
 
 
 const createPeerConnection = (offer) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         // Create a new RTCPeerConnection instance with ICE servers configuration
         peerConnection = new RTCPeerConnection({
             iceServers: [
@@ -114,6 +123,12 @@ const createPeerConnection = (offer) => {
         localStream.getTracks().forEach((track) => {
             peerConnection.addTrack(track, localStream);
         });
+
+
+        peerConnection.onsignalingstatechange =(e) => {
+            console.log(e)
+            console.log('Signaling state changed:', peerConnection.signalingState);
+        }
 
 
         // Both ways below work the same to handle ICE candidate events:
@@ -148,7 +163,7 @@ const createPeerConnection = (offer) => {
 
             // Set the remote description to the offer received from the signaling server
             // console.log(peerConnection.signalingState) // This will be "stable" if we are the one who created the offer
-            peerConnection.setRemoteDescription(offer);
+            await peerConnection.setRemoteDescription(offer);
             // console.log(peerConnection.signalingState) // This will be "have-remote-offer" if we are the one who created the offer
 
         }

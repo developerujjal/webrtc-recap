@@ -56,10 +56,10 @@ io.on('connection', (socket) => {
     userName
   });
 
-  
+
 
   // a new client has joined. if there are any offers available, send/emit them to the client
-  if(offers.length){
+  if (offers.length) {
     socket.emit('availableOffers', offers)
   }
 
@@ -85,13 +85,13 @@ io.on('connection', (socket) => {
 
 
   socket.on('sendIceCandidateToSignalingServer', (iceCandidatedObj) => {
-    const {didIOffer, iceCandidate, iceUserName} = iceCandidatedObj;
+    const { didIOffer, iceCandidate, iceUserName } = iceCandidatedObj;
 
     // console.log('iceCandidate received:', iceCandidate);
 
-    if(didIOffer){
+    if (didIOffer) {
       const offerInOffers = offers.find((offer) => offer.offererUsername === iceUserName);
-      if(offerInOffers){
+      if (offerInOffers) {
         // add the ice candidate to the offer
         offerInOffers.offerIceCandidate.push(iceCandidate);
       }
@@ -101,25 +101,36 @@ io.on('connection', (socket) => {
   });
 
   socket.on('newAnswer', (offerObj) => {
-   // emit the answer (offerObj) back to the client1
-  //  in order to do that we need to the socket id of the client1 who created the offer
+    // emit the answer (offerObj) back to the client1
+    //  in order to do that we need to the socket id of the client1 who created the offer
 
-  const socketToAnswer = connectedSockets.find((connectedSocket) => connectedSocket.userName === offerObj.offererUsername);
+    const socketToAnswer = connectedSockets.find((connectedSocket) => connectedSocket.userName === offerObj.offererUsername);
 
-  if(!socketToAnswer){
-    console.log('Connected Socket not found')
-    return;
-  };
+    if (!socketToAnswer) {
+      console.log('Connected Socket not found')
+      return;
+    };
 
-  if(socketToAnswer){
     // we found the socketId of the client1 who created the offer
     const socketIdToAnswer = socketToAnswer.socketId;
 
-  }
+    // we need to find the offer in the offers array and update it with the answer
+    const offerToUpdate = offers.find((offer) => offer.offererUsername == offerObj.offererUsername);
+
+    if(!offerToUpdate) {
+      console.log('Offer not found')
+      return;
+    };
+
+    offerToUpdate.answer = offerObj.answer;
+    offerToUpdate.answererUsername = userName;
 
 
+    // socket. has a to() which alllows us to emit to a specific socketId/room
+    // every socket has it's own room 
+    socket.to(socketIdToAnswer).emit('answerResponse', offerToUpdate);
 
-    
+
   })
 
 
