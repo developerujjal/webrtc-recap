@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import useAxsios from "../hooks/useAxsios";
+import './MainVideoPage.css';
+import CallInfo from "./btn/CallInfo";
+import ChatWindow from "./ChatWindow";
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
@@ -28,9 +31,18 @@ const MainVideoPage = () => {
     }
   }, [serchParams, axios]);
 
-  return <div>
-    <h1>Person Name: {getTokenValue?.name}</h1>
-  </div>;
+  return(
+    <div className="main-video-page">
+      <div className="video-chat-wrapper">
+        {/* hold our remote video and local video */}
+
+        <video id="large-feed" autoPlay controls playsInline></video>
+        <video id="own-feed" autoPlay controls playsInline></video>
+        {getTokenValue.name && <CallInfo apptInfo={getTokenValue} /> }
+        <ChatWindow />
+      </div>
+    </div>
+  )
 };
 
 export default MainVideoPage;

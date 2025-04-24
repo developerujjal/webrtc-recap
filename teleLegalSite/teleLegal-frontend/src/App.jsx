@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router";
-import socketConnection from "./utilies/socketConnection";
 import MainVideoPage from "./components/MainVideoPage";
 import Home from "./components/Home";
 
