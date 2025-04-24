@@ -9,7 +9,7 @@ const Home = () => {
     const fetchData = async () => {
       const res = await axios.get("/user-link");
       if (res.data.token) {
-        navigate("/join-video?token=" + res.data.token);
+       return navigate("/join-video?token=" + res.data.token);
       }
     };
 
