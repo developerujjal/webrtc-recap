@@ -15,18 +15,18 @@ router.get('/user-link', (req, res) => {
     };
 
     const token = jwt.sign(data, secret);
-    res.send('http://localhost:3000/user-link?token=' + token);
+    res.send({token});
 
 });
 
 router.get('/validate-link', (req, res) => {
-    const token =req.query.token;
-    if(!token){
+    const token = req.query.token;
+    if (!token) {
         return res.status(400).send('Link is not valid');
     };
-   const decodedData = jwt.verify(token, secret,);
+    const decodedData = jwt.verify(token, secret,);
 
-   res.send(decodedData)
+    res.send(decodedData)
 });
 
 
