@@ -4,6 +4,7 @@ import useAxsios from "../hooks/useAxsios";
 import './MainVideoPage.css';
 import CallInfo from "./btn/CallInfo";
 import ChatWindow from "./ChatWindow";
+import ActionButtons from "./btn/ActionButtons";
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
@@ -41,6 +42,8 @@ const MainVideoPage = () => {
         {getTokenValue.name && <CallInfo apptInfo={getTokenValue} /> }
         <ChatWindow />
       </div>
+
+      <ActionButtons />
     </div>
   )
 };
