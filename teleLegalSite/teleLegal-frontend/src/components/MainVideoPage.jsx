@@ -7,6 +7,7 @@ import ChatWindow from "./ChatWindow";
 import ActionButtons from "./btn/ActionButtons";
 import addStream from "../reduxStuff/actions/addStream";
 import { useDispatch } from "react-redux";
+import createPeerConnection from "../utilies/createPeerConnection";
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
@@ -24,14 +25,21 @@ const MainVideoPage = () => {
         });
 
         disPatch(addStream("localStream", stream));
-        
+        const { peerConnection, remoteStream } = createPeerConnection();
+        // we don't know 'who' we talked to yet........
+
+        disPatch(addStream("remote1", remoteStream, peerConnection));
+
+        //we have a peerConnection......, let's make an offer
+        //except it not time yet;
+            // SDP = infomation about the feed, and we have no traks
       } catch (error) {
         console.error("Error fetching media:", error);
       }
     };
 
     fetchMedia();
-  }, []);
+  }, [disPatch]);
 
   useEffect(() => {
     const token = serchParams.get("token");

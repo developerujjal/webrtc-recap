@@ -10,9 +10,9 @@ export default (state, action) => {
 
         return copyState;
 
-    } else if (action.type === "LOGOUT_ACTIONS") {
+    }else if(action.type === "LOGOUT_ACTIONS"){
         return {};
-    } else {
+    } else{
         return state;
     };
 }
