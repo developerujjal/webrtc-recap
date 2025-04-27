@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import startLocalVideoStream from "./startLocalVideoStream";
+import updateCallStatus from "../../reduxStuff/actions/updateCallStatus";
 
 const VideoButton = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
@@ -8,24 +9,45 @@ const VideoButton = ({ smallFeedEl }) => {
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const dispatch = useDispatch();
 
-  console.log(streams)
+  console.log(streams);
 
   const startStopVideo = () => {
     console.log("startStopVideo clicked");
-    if (callStatus.haveMedia) {
-      // we have the media, so we can start/show feed stop the video;
 
+    // first check if the video is already enabled
+
+    if (callStatus.video === "enabled") {
+      // update the redux
+      dispatch(updateCallStatus("video", "disabled"));
+      // set the video stream disabled
+
+      const videoTracks = streams.localStream.stream.getVideoTracks();
+
+      videoTracks.forEach((track) => {
+        track.enabled = false;
+      });
+    } else if (callStatus.video === "disabled") {
+      // second check if the video is disabled then we need to enabled;
+      // update the redux
+      dispatch(updateCallStatus("video", "enabled"));
+
+      // set the video stream endabled
+
+      const videoTracks = streams.localStream.stream.getVideoTracks();
+
+      videoTracks.forEach((track) => {
+        track.enabled = true;
+      });
+    } else if (callStatus.haveMedia) {
+      //thirdly, we have to check the media, if so start the video stream
       smallFeedEl.current.srcObject = streams.localStream.stream;
 
       startLocalVideoStream(streams, dispatch);
-
-
     } else {
       // it possible that we don't have the media yet, so we need to wait for it to be available
       setPendingUpdate(true);
     }
   };
-
 
   useEffect(() => {
     // it will be called when the pendingUpdate is true
@@ -33,6 +55,7 @@ const VideoButton = ({ smallFeedEl }) => {
       console.log("pendingUpdate is true, and we have media now");
       setPendingUpdate(false);
       smallFeedEl.current.srcObject = streams.localStream.stream;
+      startLocalVideoStream(streams, dispatch);
     }
   }, [callStatus.haveMedia, pendingUpdate]);
 
@@ -42,7 +65,7 @@ const VideoButton = ({ smallFeedEl }) => {
       <div onClick={startStopVideo} className="button camera">
         <i className="fa fa-video"></i>
         <div className="btn-text">
-          {callStatus.video === "display" ? "Stop" : "Start"} Video
+          {callStatus.video === "enabled" ? "Stop" : "Start"} Video
         </div>
       </div>
     </div>
