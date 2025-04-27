@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import useAxsios from "../hooks/useAxsios";
 import "./MainVideoPage.css";
@@ -8,11 +8,15 @@ import ActionButtons from "./btn/ActionButtons";
 import addStream from "../reduxStuff/actions/addStream";
 import { useDispatch } from "react-redux";
 import createPeerConnection from "../utilies/createPeerConnection";
+import callStateReducer from "../reduxStuff/reducers/callStateReducer";
+import socket from "../utilies/socketConnection";
+
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
   const [serchParams, setSerchParams] = useSearchParams();
   const [getTokenValue, setGetTokenValue] = useState({});
+  const smallFeedEl = useRef(null);
   const axios = useAxsios();
   const disPatch = useDispatch();
 
@@ -23,6 +27,8 @@ const MainVideoPage = () => {
           video: true,
           audio: false,
         });
+
+        disPatch(callStateReducer('haveMedia', true))
 
         disPatch(addStream("localStream", stream));
         const { peerConnection, remoteStream } = createPeerConnection();
@@ -66,7 +72,7 @@ const MainVideoPage = () => {
         {/* hold our remote video and local video */}
 
         <video id="large-feed" autoPlay controls playsInline></video>
-        <video id="own-feed" autoPlay controls playsInline></video>
+        <video id="own-feed" ref={smallFeedEl} autoPlay controls playsInline></video>
         {getTokenValue.name && <CallInfo apptInfo={getTokenValue} />}
         <ChatWindow />
       </div>
