@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import createPeerConnection from "../utilies/createPeerConnection";
 import callStateReducer from "../reduxStuff/reducers/callStateReducer";
 import socket from "../utilies/socketConnection";
-
+import updateCallStatus from "../reduxStuff/actions/updateCallStatus";
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
@@ -28,9 +28,10 @@ const MainVideoPage = () => {
           audio: false,
         });
 
-        disPatch(callStateReducer('haveMedia', true))
+        disPatch(updateCallStatus("haveMedia", true));
 
         disPatch(addStream("localStream", stream));
+
         const { peerConnection, remoteStream } = createPeerConnection();
         // we don't know 'who' we talked to yet........
 
@@ -38,7 +39,7 @@ const MainVideoPage = () => {
 
         //we have a peerConnection......, let's make an offer
         //except it not time yet;
-            // SDP = infomation about the feed, and we have no traks
+        // SDP = infomation about the feed, and we have no traks
       } catch (error) {
         console.error("Error fetching media:", error);
       }
@@ -72,12 +73,18 @@ const MainVideoPage = () => {
         {/* hold our remote video and local video */}
 
         <video id="large-feed" autoPlay controls playsInline></video>
-        <video id="own-feed" ref={smallFeedEl} autoPlay controls playsInline></video>
+        <video
+          id="own-feed"
+          ref={smallFeedEl}
+          autoPlay
+          controls
+          playsInline
+        ></video>
         {getTokenValue.name && <CallInfo apptInfo={getTokenValue} />}
         <ChatWindow />
       </div>
 
-      <ActionButtons />
+      <ActionButtons smallFeedEl={smallFeedEl} />
     </div>
   );
 };

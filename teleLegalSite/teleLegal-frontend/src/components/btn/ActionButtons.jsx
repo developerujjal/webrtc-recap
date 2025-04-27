@@ -7,7 +7,7 @@ import AudioBtn from "./AudioBtn";
 import VideoButton from "./VideoBtn";
 
 // eslint-disable-next-line no-unused-vars
-const ActionButtons = ({ openCloseChat, smallFeedlEl }) => {
+const ActionButtons = ({ openCloseChat, smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
   // const callStatus = useSelector(state=>state.callStatus);
   const menuButtons = useRef(null);
@@ -49,7 +49,7 @@ const ActionButtons = ({ openCloseChat, smallFeedlEl }) => {
       <div className="left col-2">
         <AudioBtn />
 
-        <VideoButton />
+        <VideoButton smallFeedEl={smallFeedEl} />
       </div>
 
       <div className="col-8 text-center">
