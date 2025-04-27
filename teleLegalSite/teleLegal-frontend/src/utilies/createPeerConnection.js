@@ -19,7 +19,7 @@ const createPeerConnection = () => {
         //we pass it the iceServers to use
         //it will get us ICE candidates to send to the other peer
 
-        const remoteStream = new MediaStream();
+        const remoteStream =  new MediaStream();
 
         peerConnection.addEventListener('signalingstatechange', (e) => {
             console.log('Signaling state change:', peerConnection.signalingState);

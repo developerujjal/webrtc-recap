@@ -8,7 +8,6 @@ import ActionButtons from "./btn/ActionButtons";
 import addStream from "../reduxStuff/actions/addStream";
 import { useDispatch } from "react-redux";
 import createPeerConnection from "../utilies/createPeerConnection";
-import callStateReducer from "../reduxStuff/reducers/callStateReducer";
 import socket from "../utilies/socketConnection";
 import updateCallStatus from "../reduxStuff/actions/updateCallStatus";
 
@@ -32,7 +31,8 @@ const MainVideoPage = () => {
 
         disPatch(addStream("localStream", stream));
 
-        const { peerConnection, remoteStream } = createPeerConnection();
+        const { peerConnection, remoteStream } = await createPeerConnection();
+
         // we don't know 'who' we talked to yet........
 
         disPatch(addStream("remote1", remoteStream, peerConnection));

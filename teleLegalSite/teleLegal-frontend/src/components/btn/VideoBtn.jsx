@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import startLocalVideoStream from "./startLocalVideoStream";
 
 const VideoButton = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
   const streams = useSelector((state) => state.streams);
   const [pendingUpdate, setPendingUpdate] = useState(false);
-  console.log(streams);
-  console.log(smallFeedEl);
+  const dispatch = useDispatch();
+
+  console.log(streams)
 
   const startStopVideo = () => {
     console.log("startStopVideo clicked");
@@ -14,6 +16,10 @@ const VideoButton = ({ smallFeedEl }) => {
       // we have the media, so we can start/show feed stop the video;
 
       smallFeedEl.current.srcObject = streams.localStream.stream;
+
+      startLocalVideoStream(streams, dispatch);
+
+
     } else {
       // it possible that we don't have the media yet, so we need to wait for it to be available
       setPendingUpdate(true);
@@ -23,13 +29,12 @@ const VideoButton = ({ smallFeedEl }) => {
 
   useEffect(() => {
     // it will be called when the pendingUpdate is true
-    if(pendingUpdate && callStatus.haveMedia){
+    if (pendingUpdate && callStatus.haveMedia) {
       console.log("pendingUpdate is true, and we have media now");
       setPendingUpdate(false);
       smallFeedEl.current.srcObject = streams.localStream.stream;
-    };
-
-  }, [callStatus.haveMedia, pendingUpdate])
+    }
+  }, [callStatus.haveMedia, pendingUpdate]);
 
   return (
     <div className="button-wrapper video-button d-inline-block">
