@@ -36,8 +36,9 @@ const VideoDevices = ({ smallFeedEl }) => {
       newConstraints
     );
 
-    // 3. update redux with that videoDevice deviceId
+    // 3. update redux with that videoDevice deviceId and video is enabled
     dispatch(updateCallStatus("videoDevice", videoDeviceId));
+    dispatch(updateCallStatus("video", 'enabled'))
 
     // 4 update the smallFeedEl
     smallFeedEl.current.srcObject = getUserMediaStream;
@@ -46,11 +47,16 @@ const VideoDevices = ({ smallFeedEl }) => {
     dispatch(addStream("localStream", getUserMediaStream));
 
     // 6. add tarcks
+    const tracks = getUserMediaStream.getVideoTracks();
+    // we will back here later
+    // if we stop the old tracks, and add the new tracks, the will mean renagotiation...
+
+
   };
 
   return (
     <div className="caret-dropdown" style={{ top: "-25px" }}>
-      <select defaultValue={1} onChange={(e) => chanageVideoDevice(e)}>
+      <select defaultValue={callStatus.videoDevice} onChange={(e) => chanageVideoDevice(e)}>
         {videoDevicesLists.map((device, index) => {
           return (
             <option key={index} value={device.deviceId}>
