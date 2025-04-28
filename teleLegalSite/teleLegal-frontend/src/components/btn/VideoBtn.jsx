@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import startLocalVideoStream from "./startLocalVideoStream";
 import updateCallStatus from "../../reduxStuff/actions/updateCallStatus";
+import VideoDevices from "../VideoDevices";
 
 const VideoButton = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
   const streams = useSelector((state) => state.streams);
   const [pendingUpdate, setPendingUpdate] = useState(false);
+  const [videoDevicesOpen, setVideoDevicesOpen] = useState(false);
   const dispatch = useDispatch();
 
   console.log(streams);
@@ -59,15 +61,23 @@ const VideoButton = ({ smallFeedEl }) => {
     }
   }, [callStatus.haveMedia, pendingUpdate]);
 
+
+
+
   return (
     <div className="button-wrapper video-button d-inline-block">
-      <i className="fa fa-caret-up choose-video"></i>
+      <i
+        onClick={() => setVideoDevicesOpen(!videoDevicesOpen)}
+        className="fa fa-caret-up choose-video"
+      ></i>
       <div onClick={startStopVideo} className="button camera">
         <i className="fa fa-video"></i>
         <div className="btn-text">
           {callStatus.video === "enabled" ? "Stop" : "Start"} Video
         </div>
       </div>
+
+      {videoDevicesOpen && <VideoDevices />}
     </div>
   );
 };
