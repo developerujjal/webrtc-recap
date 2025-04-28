@@ -77,7 +77,7 @@ const VideoButton = ({ smallFeedEl }) => {
         </div>
       </div>
 
-      {videoDevicesOpen && <VideoDevices />}
+      {videoDevicesOpen && <VideoDevices smallFeedEl={smallFeedEl} />}
     </div>
   );
 };
