@@ -4,9 +4,11 @@ import GetIndividualDevices from "../GetIndividualDevices";
 import getDevices from "../../utilies/getDevices";
 import updateCallStatus from "../../reduxStuff/actions/updateCallStatus";
 import addStream from "../../reduxStuff/actions/addStream";
+import startAudioStream from "./startAudioStream";
 
 const AudioBtn = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
+  const streams = useSelector((state) => state.streams);
   const [openAudioDevices, setOpenAudioDevices] = useState(false);
   const [audioDevicesLists, setAudioDevicesLists] = useState([]);
   const dispatch = useDispatch();
@@ -23,6 +25,37 @@ const AudioBtn = ({ smallFeedEl }) => {
 
     getAudioDevices();
   }, [openAudioDevices]);
+
+  const startStopAudio = () => {
+    if (callStatus.audio === "enabled") {
+      // update the redux
+      dispatch(updateCallStatus("audio", "disabled"));
+      // set the audio stream disabled
+
+      const audioTracks = streams.localStream.stream.getAudioTracks();
+
+      audioTracks.forEach((track) => {
+        track.enabled = false;
+      });
+    } else if (callStatus.audio === "disabled") {
+      // second check if the audio is disabled then we need to enabled;
+      // update the redux
+      dispatch(updateCallStatus("audio", "enabled"));
+
+      // set the video stream endabled
+
+      const audioTracks = streams.localStream.stream.getAudioTracks();
+
+      audioTracks.forEach((track) => {
+        track.enabled = true;
+      });
+    } else {
+      // audio is off, so what to do?
+      chanageAudioDevice({ target: { value: "inputDefault" } });
+
+      startAudioStream(streams)
+    }
+  };
 
   const chanageAudioDevice = async (e) => {
     //1. we have got deviceId and deviceType from the event
@@ -53,15 +86,13 @@ const AudioBtn = ({ smallFeedEl }) => {
 
       const tracks = getUserMediaStream.getAudioTracks();
       // come back here later
-
-      
     }
   };
 
   let micText;
-  if (callStatus.current === "idle") {
+  if (callStatus.audio === "off") {
     micText = "Join Audio";
-  } else if (callStatus.audio) {
+  } else if (callStatus.audio === "enabled") {
     micText = "Mute";
   } else {
     micText = "Unmute";
@@ -73,7 +104,7 @@ const AudioBtn = ({ smallFeedEl }) => {
         onClick={() => setOpenAudioDevices(!openAudioDevices)}
         className="fa fa-caret-up choose-audio"
       ></i>
-      <div className="button mic">
+      <div onClick={startStopAudio} className="button mic">
         <i className="fa fa-microphone"></i>
         <div className="btn-text">{micText}</div>
       </div>
