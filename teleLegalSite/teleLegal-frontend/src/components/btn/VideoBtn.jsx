@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import startLocalVideoStream from "./startLocalVideoStream";
 import updateCallStatus from "../../reduxStuff/actions/updateCallStatus";
-import VideoDevices from "../VideoDevices";
 import addStream from "../../reduxStuff/actions/addStream";
 import getDevices from "../../utilies/getDevices";
+import GetIndividualDevices from "../GetIndividualDevices";
 
 const VideoButton = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
@@ -123,10 +123,11 @@ const VideoButton = ({ smallFeedEl }) => {
       </div>
 
       {videoDevicesOpen && (
-        <VideoDevices
+        <GetIndividualDevices
           chanageVideoDevice={chanageVideoDevice}
-          videoDevicesLists={videoDevicesLists}
-          callStatus={callStatus}
+          devicesLists={videoDevicesLists}
+          defaultValue={callStatus.videoDevice}
+          type="video"
         />
       )}
     </div>
