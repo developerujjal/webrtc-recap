@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import startLocalVideoStream from "./startLocalVideoStream";
 import updateCallStatus from "../../reduxStuff/actions/updateCallStatus";
 import VideoDevices from "../VideoDevices";
+import addStream from "../../reduxStuff/actions/addStream";
+import getDevices from "../../utilies/getDevices";
 
 const VideoButton = ({ smallFeedEl }) => {
   const callStatus = useSelector((state) => state.callStatus);
   const streams = useSelector((state) => state.streams);
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [videoDevicesOpen, setVideoDevicesOpen] = useState(false);
+  const [videoDevicesLists, setVideoDevicesLists] = useState([]);
   const dispatch = useDispatch();
 
   console.log(streams);
@@ -52,6 +55,51 @@ const VideoButton = ({ smallFeedEl }) => {
   };
 
   useEffect(() => {
+    if (videoDevicesOpen) {
+      const getDevicesAync = async () => {
+        const devices = await getDevices();
+        setVideoDevicesLists(devices.videoDevices);
+      };
+
+      getDevicesAync();
+    }
+  }, [videoDevicesOpen]);
+
+  const chanageVideoDevice = async (e) => {
+    // the user has selected a new video device
+    // 1. get the selected device
+    const videoDeviceId = e.target.value;
+
+    // 2. we need to getUserMedia permission
+    const newConstraints = {
+      audio:
+        callStatus.audioDevice === "default"
+          ? true
+          : { deviceId: { exact: callStatus.audioDevice } },
+      video: { deviceId: { exact: videoDeviceId } },
+    };
+
+    const getUserMediaStream = await navigator.mediaDevices.getUserMedia(
+      newConstraints
+    );
+
+    // 3. update redux with that videoDevice deviceId and video is enabled
+    dispatch(updateCallStatus("videoDevice", videoDeviceId));
+    dispatch(updateCallStatus("video", "enabled"));
+
+    // 4 update the smallFeedEl
+    smallFeedEl.current.srcObject = getUserMediaStream;
+
+    // 5. we need to update the localStream with the new stream
+    dispatch(addStream("localStream", getUserMediaStream));
+
+    // 6. add tarcks
+    const tracks = getUserMediaStream.getVideoTracks();
+    // we will back here later
+    // if we stop the old tracks, and add the new tracks, the will mean renagotiation...
+  };
+
+  useEffect(() => {
     // it will be called when the pendingUpdate is true
     if (pendingUpdate && callStatus.haveMedia) {
       console.log("pendingUpdate is true, and we have media now");
@@ -60,9 +108,6 @@ const VideoButton = ({ smallFeedEl }) => {
       startLocalVideoStream(streams, dispatch);
     }
   }, [callStatus.haveMedia, pendingUpdate]);
-
-
-
 
   return (
     <div className="button-wrapper video-button d-inline-block">
@@ -77,7 +122,13 @@ const VideoButton = ({ smallFeedEl }) => {
         </div>
       </div>
 
-      {videoDevicesOpen && <VideoDevices smallFeedEl={smallFeedEl} />}
+      {videoDevicesOpen && (
+        <VideoDevices
+          chanageVideoDevice={chanageVideoDevice}
+          videoDevicesLists={videoDevicesLists}
+          callStatus={callStatus}
+        />
+      )}
     </div>
   );
 };
