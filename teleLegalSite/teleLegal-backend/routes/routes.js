@@ -2,6 +2,14 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const secret = 'aldkfsdlfksdlfkdsdklfasakdfj';
+const { v4: uuidv4 } = require('uuid');
+
+
+const professionalAppointments = [];
+
+
+// router.set('professionalAppointments', professionalAppointments);
+
 
 
 router.get('/hello', (req, res) => {
@@ -9,13 +17,20 @@ router.get('/hello', (req, res) => {
 });
 
 router.get('/user-link', (req, res) => {
+
+    const uuid = uuidv4();  // unique identifier for the user/primary key
+
+
     const data = {
         name: 'barry',
-        appDate: Date.now()
+        appDate: Date.now(),
+        uuid
     };
 
+    professionalAppointments.push(data);
+
     const token = jwt.sign(data, secret);
-    res.send({token});
+    res.send({ token });
 
 });
 
@@ -27,6 +42,8 @@ router.get('/validate-link', (req, res) => {
     const decodedData = jwt.verify(token, secret,);
 
     res.send(decodedData)
+
+    console.log(professionalAppointments)
 });
 
 

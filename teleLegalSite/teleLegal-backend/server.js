@@ -24,6 +24,10 @@ const io = new Server(httpServer, {
     }
 });
 
+const professionalAppointments = [];
+
+
+app.set('professionalAppointments', professionalAppointments);
 
 // here we are using the router from routes.js
 app.use('/api', router);
@@ -33,10 +37,25 @@ app.get('/', (req, res) => {
 });
 
 
+const allKnownOffers = {
+    //offer
+    //professionalsFullName
+    //clientName
+    //apptDate
+    //offererIceCandidates
+    //answer
+    //answererIceCandidates
+}
+
 
 // Socket connection logic
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id)
+
+    socket.on('newOffer', ({offer, apptInfo}) => {
+
+    })
+
 });
 
 
