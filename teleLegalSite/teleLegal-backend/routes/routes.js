@@ -44,8 +44,18 @@ router.get('/validate-link', (req, res) => {
 
     res.send(decodedData)
 
-    console.log(professionalAppointments)
 });
+
+
+router.get('/pro-link', (req, res) => {
+
+    const userData = {
+        name: 'barry',
+        proId: 12345
+    };
+    const token = jwt.sign(userData, secret);
+    res.send({ token });
+})
 
 
 module.exports = router;

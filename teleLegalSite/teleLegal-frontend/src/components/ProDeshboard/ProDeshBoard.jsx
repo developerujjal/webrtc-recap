@@ -1,7 +1,38 @@
+import { useEffect, useState } from "react";
 import "./ProDashboard.css";
+import useAxsios from "../../hooks/useAxsios";
+import { useSearchParams } from "react-router";
+import socket from "../../utilies/socketConnection";
 
 const ProDashboard = () => {
-  console.log("Test");
+  const axios = useAxsios();
+  const [serchParams, setSerchParams] = useSearchParams();
+  const [getToken, setGetToken] = useState([]);
+
+
+  useEffect(() => {
+    const token = serchParams.get("token");
+    console.log(token);
+
+    if (token) {
+      const fetchDecodedToken = async () => {
+        try {
+          const res = await axios.get(`/validate-link?token=${token}`);
+          console.log(res.data);
+          setGetToken(res.data);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      };
+
+      fetchDecodedToken();
+    }
+  }, [serchParams, axios]);
+
+
+  console.log(getToken);
+
+
   return (
     <div className="container">
       <div className="row">

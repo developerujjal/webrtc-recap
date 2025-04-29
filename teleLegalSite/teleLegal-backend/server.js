@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const router = require('./routes/routes');
 const port = process.env.PORT || 3000;
 const { createServer } = require("http");
 const { Server } = require('socket.io');
+const secret = 'aldkfsdlfksdlfkdsdklfasakdfj';
+
 
 // Middleware
 app.use(cors({
@@ -55,13 +58,20 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id)
 
     // to fill it later
-    const fullName = socket.handshake.auth.fullName;
+    const jwtToken = socket.handshake.auth.jwt;
+    const decodedData = jwt.verify(jwtToken, secret);
+
+    const { name, proId } = decodedData;
 
 
     connectedProfessionals.push({
         socketId: socket.id,
-        fullName: fullName,
+        fullName: name,
+        proId
     })
+
+    console.log('connectedProfessionals', connectedProfessionals);
+    
     socket.on('newOffer', ({ offer, apptInfo }) => {
 
         allKnownOffers[apptInfo.uuid] = {
