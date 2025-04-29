@@ -24,7 +24,8 @@ router.get('/user-link', (req, res) => {
     const data = {
         name: 'barry',
         appDate: Date.now(),
-        uuid
+        uuid,
+        clientName: 'Allen'
     };
 
     professionalAppointments.push(data);

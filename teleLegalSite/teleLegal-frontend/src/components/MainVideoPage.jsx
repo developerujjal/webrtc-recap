@@ -6,13 +6,15 @@ import CallInfo from "./btn/CallInfo";
 import ChatWindow from "./ChatWindow";
 import ActionButtons from "./btn/ActionButtons";
 import addStream from "../reduxStuff/actions/addStream";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import createPeerConnection from "../utilies/createPeerConnection";
 import socket from "../utilies/socketConnection";
 import updateCallStatus from "../reduxStuff/actions/updateCallStatus";
 
 const MainVideoPage = () => {
   // eslint-disable-next-line no-unused-vars
+  const callStatus = useSelector((state) => state.callStatus);
+  const streams = useSelector((state) => state.streams);
   const [serchParams, setSerchParams] = useSearchParams();
   const [getTokenValue, setGetTokenValue] = useState({});
   const smallFeedEl = useRef(null);
@@ -47,6 +49,32 @@ const MainVideoPage = () => {
 
     fetchMedia();
   }, [disPatch]);
+
+  useEffect(() => {
+    const createOfferAsync = async () => {
+      for (const stream in streams) {
+        if (stream !== "localStream") {
+          try {
+            const pc = streams[stream].peerConnection;
+            const offer = await pc.createOffer();
+            socket.emit("newOffer", { offer, apptInfo: getTokenValue });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      };
+
+      disPatch(updateCallStatus('haveCreatedOffer', true));
+    };
+
+    if (
+      callStatus.audio === "enabled" &&
+      callStatus.video === "enabled" &&
+      !callStatus.haveCreatedOffer
+    ) {
+      createOfferAsync();
+    }
+  }, [callStatus.audio, callStatus.video, callStatus.haveCreatedOffer]);
 
   useEffect(() => {
     const token = serchParams.get("token");
