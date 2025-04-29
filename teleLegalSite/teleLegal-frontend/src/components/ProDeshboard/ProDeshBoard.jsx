@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./ProDashboard.css";
 import useAxsios from "../../hooks/useAxsios";
 import { useSearchParams } from "react-router";
-import socket from "../../utilies/socketConnection";
+import socketConnection from "../../utilies/socketConnection";
 
 const ProDashboard = () => {
   const axios = useAxsios();
@@ -12,7 +12,8 @@ const ProDashboard = () => {
 
   useEffect(() => {
     const token = serchParams.get("token");
-    console.log(token);
+    // console.log(token);
+    socketConnection(token);
 
     if (token) {
       const fetchDecodedToken = async () => {

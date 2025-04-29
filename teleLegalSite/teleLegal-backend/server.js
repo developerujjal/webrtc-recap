@@ -59,19 +59,42 @@ io.on('connection', (socket) => {
 
     // to fill it later
     const jwtToken = socket.handshake.auth.jwt;
-    const decodedData = jwt.verify(jwtToken, secret);
+
+    let decodedData;
+    try {
+        decodedData = jwt.verify(jwtToken, secret);
+
+    } catch (error) {
+        socket.disconnected();
+        return;
+    }
+
 
     const { name, proId } = decodedData;
 
+    if (proId) {
+        const connectedPro = connectedProfessionals.find((p) => p.proId === proId);
+        // if the deshobarduser is already connected, we update the socketId
+        if (connectedPro) {
+            connectedPro.socketId = socket.id;
+        } else {
+            connectedProfessionals.push({
+                socketId: socket.id,
+                fullName: name,
+                proId
+            })
+        }
 
-    connectedProfessionals.push({
-        socketId: socket.id,
-        fullName: name,
-        proId
-    })
+    }else{
+        // this is a client
+
+        
+    }
+
+
 
     console.log('connectedProfessionals', connectedProfessionals);
-    
+
     socket.on('newOffer', ({ offer, apptInfo }) => {
 
         allKnownOffers[apptInfo.uuid] = {
