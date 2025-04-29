@@ -47,7 +47,7 @@ const ActionButtons = ({ openCloseChat, smallFeedEl }) => {
     <div id="menu-buttons" ref={menuButtons} className="row">
       {/* <i className="fa fa-microphone" style="font-size:48px;color:red"></i> */}
       <div className="left col-2">
-        <AudioBtn />
+        <AudioBtn smallFeedEl={smallFeedEl} />
 
         <VideoButton smallFeedEl={smallFeedEl} />
       </div>

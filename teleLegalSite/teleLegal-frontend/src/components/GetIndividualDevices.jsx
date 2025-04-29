@@ -21,13 +21,13 @@ const GetIndividualDevices = ({
     devicesLists.forEach((device, index) => {
       if (device.kind === "audioinput") {
         audioInputEl.push(
-          <option key={index} value={device.deviceId}>
+          <option key={index} value={`input${device.deviceId}`}>
             {device.label}
           </option>
         );
       } else if (device.kind === "audiooutput") {
         audioOutputEl.push(
-          <option key={index} value={device.deviceId}>
+          <option key={index} value={`ouput${device.deviceId}`}>
             {device.label}
           </option>
         );
